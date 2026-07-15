@@ -1,0 +1,72 @@
+<section class="sheet post-sheet">
+  <div class="format-eyebrow">
+    <span class="b1">POST</span><span class="b2">ESTÁTICO</span>
+  </div>
+
+  <div class="post-body">
+    <div class="ig-post-mockup ig-post-mockup--static">
+      <div class="post-header">
+        <span class="avatar-dot"></span>
+        <span class="line"></span>
+      </div>
+      <div class="post-media">
+        <img src="{{post.imageUrl}}" alt="" />
+        {{#if post.coverBadgeText}}
+        <div class="caption-badge">{{post.coverBadgeText}}</div>
+        {{/if}}
+      </div>
+      <div class="post-actions">
+        <span class="left">
+          <span class="icon">{{> icon-heart}}</span>
+          <span class="icon">{{> icon-comment}}</span>
+          <span class="icon">{{> icon-share}}</span>
+        </span>
+        <span class="icon">{{> icon-save}}</span>
+      </div>
+      <div class="post-meta">
+        <div class="likes-bar"></div>
+        <div class="cap-line"></div>
+        <div class="cap-line" style="width:70%"></div>
+      </div>
+    </div>
+
+    <div class="post-copy-col avoid-break">
+      <h2 class="post-heading">POST {{post.orderIndex}} — {{post.publishDateShort}} — {{post.weekdayAbbr}}</h2>
+
+      <p class="field-label">LEGENDA</p>
+      <div class="caption-text">
+        {{#each post.captionParagraphs}}
+        <p>{{this}}</p>
+        {{/each}}
+      </div>
+
+      <p class="credit-line">{{post.creditLabel}}: <a href="#">@{{client.instagramHandle}}</a></p>
+
+      <div class="post-metadata">
+        <div>Editoria: <strong>{{post.editorialLine}}</strong></div>
+        <div>Emoção: <strong>{{post.emotion}}</strong></div>
+        <div>Etapa: <strong>{{post.funnelStageLabel}}</strong></div>
+        <span class="handle">@{{client.instagramHandle}}</span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="sheet-footer">
+    <span class="site-link">{{client.websiteLabel}}</span>
+    <span class="legal"><a href="#">Condições e suporte</a><a href="#">Política de Privacidade</a></span>
+  </footer>
+</section>
+
+<style>
+  .post-sheet { display: flex; align-items: center; }
+  .post-body {
+    display: flex;
+    align-items: center;
+    gap: 20mm;
+    margin-left: 30mm;
+  }
+  /* Estático não tem grid solto ao lado — mockup fica maior e mais centrado
+     que no carrossel, onde o grid solto ocupa esse espaço */
+  .ig-post-mockup--static { width: 100mm; }
+  .post-copy-col { margin-left: 8mm; }
+</style>

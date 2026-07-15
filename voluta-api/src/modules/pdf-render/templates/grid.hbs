@@ -1,0 +1,58 @@
+<section class="sheet grid-sheet">
+  <span class="vertical-label">GRADE</span>
+
+  <div class="ig-profile-mockup">
+    <div class="ig-topbar">
+      <span class="icon">{{> icon-grid}}</span>
+      <span class="icon">{{> icon-reels}}</span>
+      <span class="icon">{{> icon-tagged}}</span>
+    </div>
+    <div class="ig-grid">
+      {{#each posts}}
+      <div class="cell">
+        <img src="{{this.thumbnailUrl}}" alt="" />
+        {{#if this.showPlayIcon}}
+        <span class="fmt-icon">{{> icon-play}}</span>
+        {{/if}}
+        <span class="cell-caption">{{this.coverBadgeText}}</span>
+      </div>
+      {{/each}}
+    </div>
+    <div class="ig-bottomnav">
+      <span class="icon">{{> icon-home}}</span>
+      <span class="icon">{{> icon-search}}</span>
+      <span class="icon">{{> icon-reels}}</span>
+      <span class="icon">{{> icon-shop}}</span>
+      <span class="profile-dot"></span>
+    </div>
+  </div>
+
+  <div class="grid-side-tag">
+    <span class="section-tag">PROJETO-VITRINE DO MÊS</span>
+  </div>
+
+  <div class="brand-mark">
+    <span class="year">20<strong>{{project.yearShort}}</strong></span>
+    <span class="logo-grid">
+      <span style="background:#f2c33c"></span><span style="background:#e8583f"></span><span style="background:#e85f9c"></span>
+      <span style="background:#3f6ad8"></span><span style="background:#111"></span><span style="background:#3fb6d8"></span>
+      <span style="background:#7a4fd6"></span><span style="background:#2f9e5e"></span><span style="background:#f2a33c"></span>
+    </span>
+  </div>
+
+  <footer class="sheet-footer">
+    <span class="site-link">{{client.websiteLabel}}</span>
+    <span class="legal"><a href="#">Condições e suporte</a><a href="#">Política de Privacidade</a></span>
+    <span class="site-link">@{{client.instagramHandle}}</span>
+  </footer>
+</section>
+
+<style>
+  .grid-sheet { display: flex; align-items: center; justify-content: center; }
+  .grid-side-tag {
+    position: absolute;
+    top: 96mm;
+    right: var(--page-pad-x);
+    width: 90mm;
+  }
+</style>

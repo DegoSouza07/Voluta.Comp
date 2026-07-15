@@ -1,0 +1,74 @@
+<section class="sheet post-sheet">
+  <div class="format-eyebrow">
+    <span class="b1">POST</span><span class="b2">REEL</span>
+  </div>
+
+  <div class="post-body">
+    <div class="frame-col">
+      <span class="frame-label">Capa</span>
+      <div class="phone-mockup">
+        <div class="screen">
+          <img class="bg" src="{{post.coverFrameUrl}}" alt="" />
+          <div class="status-row">
+            <span class="avatar-dot"></span>
+            <span class="progress-bar"></span>
+          </div>
+          <div class="caption-badge {{post.coverBadgeVariant}}">{{post.coverBadgeText}}</div>
+          <span class="like-icon">{{> icon-heart}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="frame-col">
+      <span class="frame-label">Reel</span>
+      <div class="phone-mockup">
+        <div class="screen">
+          <img class="bg" src="{{post.reelFrameUrl}}" alt="" />
+          <div class="status-row">
+            <span class="avatar-dot"></span>
+            <span class="progress-bar"></span>
+          </div>
+          <div class="onscreen-caption">{{post.onScreenCaption}}</div>
+          <div class="bottom-bar"></div>
+          <span class="reel-scrub"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="post-copy-col avoid-break">
+      <h2 class="post-heading">POST {{post.orderIndex}} — {{post.publishDateShort}} — {{post.weekdayAbbr}}</h2>
+
+      <p class="field-label">LEGENDA</p>
+      <div class="caption-text">
+        {{#each post.captionParagraphs}}
+        <p>{{this}}</p>
+        {{/each}}
+      </div>
+
+      <p class="credit-line">{{post.creditLabel}}: <a href="#">@{{client.instagramHandle}}</a></p>
+
+      <div class="post-metadata">
+        <div>Editoria: <strong>{{post.editorialLine}}</strong></div>
+        <div>Emoção: <strong>{{post.emotion}}</strong></div>
+        <div>Etapa: <strong>{{post.funnelStageLabel}}</strong></div>
+        <span class="handle">@{{client.instagramHandle}}</span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="sheet-footer">
+    <span class="site-link">{{client.websiteLabel}}</span>
+    <span class="legal"><a href="#">Condições e suporte</a><a href="#">Política de Privacidade</a></span>
+  </footer>
+</section>
+
+<style>
+  .post-sheet { display: flex; align-items: center; }
+  .post-body {
+    display: flex;
+    align-items: flex-end;
+    gap: 14mm;
+    margin-left: 42mm; /* espaço reservado pro eyebrow "POST REEL" no topo */
+  }
+  .post-copy-col { margin-left: 12mm; align-self: center; }
+</style>

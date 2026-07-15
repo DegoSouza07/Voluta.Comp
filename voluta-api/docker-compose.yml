@@ -1,0 +1,65 @@
+# Uso local (só Postgres + Redis, você roda API e Worker direto com
+# `npm run start:dev` / `npm run start:worker:dev`):
+#   docker compose up -d postgres redis
+#
+# Simulação da topologia de produção completa (API + Worker + infra, tudo
+# containerizado):
+#   docker compose --profile full up -d
+#
+# (Se Docker também estiver bloqueado na sua máquina corporativa, dá pra
+# apontar DB_HOST/REDIS_HOST do .env pra uma instância gerenciada — Supabase
+# Postgres + Upstash Redis, por exemplo — sem mudar nenhuma linha de código.)
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: voluta
+    ports:
+      - '5432:5432'
+    volumes:
+      - voluta_pgdata:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+
+  # --- Os dois abaixo só sobem com `--profile full` — não fazem parte do
+  #     loop de desenvolvimento local do dia a dia, são a referência de
+  #     como a topologia de produção (API e Worker como processos/réplicas
+  #     independentes) se parece rodando via Docker. ---
+
+  api:
+    profiles: ['full']
+    build: .
+    command: node dist/main
+    restart: unless-stopped
+    depends_on: [postgres, redis]
+    env_file: .env
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+    ports:
+      - '3000:3000'
+
+  worker:
+    profiles: ['full']
+    build: .
+    command: node dist/worker
+    restart: unless-stopped
+    depends_on: [postgres, redis]
+    env_file: .env
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+    # Escala horizontal do worker é só isso — sobe mais réplicas sem
+    # tocar na API:
+    #   docker compose --profile full up -d --scale worker=3
+
+volumes:
+  voluta_pgdata:

@@ -1,0 +1,65 @@
+<section class="sheet cover-sheet">
+  <div class="cover-grid">
+    <div class="cover-photo">
+      <img src="{{project.coverImageUrl}}" alt="" />
+    </div>
+    <div class="cover-copy">
+      <h1 class="cover-title">
+        PLANO<br /><em>VISUAL</em>
+      </h1>
+      <p class="cover-subtitle">
+        <strong>{{client.name}},</strong> {{project.referenceMonthLabel}}.
+      </p>
+    </div>
+  </div>
+
+  <div class="brand-mark">
+    <span class="year">20<strong>{{project.yearShort}}</strong></span>
+    <span class="logo-grid">
+      <span style="background:#f2c33c"></span><span style="background:#e8583f"></span><span style="background:#e85f9c"></span>
+      <span style="background:#3f6ad8"></span><span style="background:#111"></span><span style="background:#3fb6d8"></span>
+      <span style="background:#7a4fd6"></span><span style="background:#2f9e5e"></span><span style="background:#f2a33c"></span>
+    </span>
+  </div>
+
+  <footer class="sheet-footer">
+    <span class="legal"><a href="#">Condições e suporte</a><a href="#">Política de Privacidade</a></span>
+    <span class="site-link">@{{client.instagramHandle}}</span>
+  </footer>
+</section>
+
+<style>
+  .cover-sheet { display: flex; align-items: center; }
+  .cover-grid {
+    display: grid;
+    grid-template-columns: 0.62fr 1fr;
+    align-items: center;
+    gap: 26mm;
+    width: 100%;
+  }
+  .cover-photo {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: #ddd;
+  }
+  .cover-photo img { width: 100%; height: 100%; object-fit: cover; }
+  .cover-copy { padding-top: 6mm; }
+  .cover-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 62pt;
+    line-height: 1.02;
+    letter-spacing: 2px;
+    color: var(--color-text);
+  }
+  .cover-title em { font-style: italic; font-weight: 600; }
+  .cover-subtitle {
+    margin-top: 8mm;
+    font-size: 12pt;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-text-soft);
+  }
+  .cover-subtitle strong { color: var(--color-accent); }
+</style>
