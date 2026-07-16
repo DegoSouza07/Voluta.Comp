@@ -43,23 +43,24 @@ interface Slot {
   kind: PostMediaKind;
   orderIndex: number;
   label: string;
+  accept: string;
 }
 
 function slotsForPost(post: Post): Slot[] {
   if (post.format === 'reel') {
     return [
-      { kind: 'cover', orderIndex: 0, label: 'Capa' },
-      { kind: 'reel', orderIndex: 0, label: 'Reel' },
+      { kind: 'cover', orderIndex: 0, label: 'Capa', accept: 'image/*' },
+      { kind: 'reel', orderIndex: 0, label: 'Reel', accept: 'video/*' },
     ];
   }
   if (post.format === 'estatico') {
-    return [{ kind: 'slide', orderIndex: 0, label: 'Imagem' }];
+    return [{ kind: 'slide', orderIndex: 0, label: 'Imagem', accept: 'image/*' }];
   }
   // carrossel — 1 slot por slide já existente, sempre em ordem
   const existing = post.media
     .filter((m) => m.kind === 'slide')
     .sort((a, b) => a.orderIndex - b.orderIndex);
-  return existing.map((m, i) => ({ kind: 'slide', orderIndex: m.orderIndex, label: `Slide ${i + 1}` }));
+  return existing.map((m, i) => ({ kind: 'slide', orderIndex: m.orderIndex, label: `Slide ${i + 1}`, accept: 'image/*' }));
 }
 
 export function PostDetailPage() {
@@ -105,6 +106,17 @@ export function PostDetailPage() {
     }
   }
 
+  async function handleDeleteMedia(postMediaId: string) {
+    if (!postId) return;
+    setError('');
+    try {
+      await mediaApi.deleteMedia(postId, postMediaId);
+      reload();
+    } catch (err) {
+      setError(errMsg(err));
+    }
+  }
+
   async function handleAddSlide() {
     if (!post || !postId) return;
     const nextIndex = post.media.filter((m) => m.kind === 'slide').length;
@@ -147,15 +159,21 @@ export function PostDetailPage() {
         <div>
           <div className={s.sectionTitle}>Mídia</div>
           <div className={s.slotGrid}>
-            {slots.map((slot) => (
-              <MediaSlot
-                key={`${slot.kind}-${slot.orderIndex}`}
-                slot={slot}
-                post={post}
-                uploading={uploadingKey === `${slot.kind}-${slot.orderIndex}`}
-                onFileSelected={(file) => handleFileSelected(slot.kind, slot.orderIndex, file)}
-              />
-            ))}
+            {slots.map((slot) => {
+              const existing = post.media.find((m) => m.kind === slot.kind && m.orderIndex === slot.orderIndex);
+              return (
+                <MediaSlot
+                  key={`${slot.kind}-${slot.orderIndex}`}
+                  slot={slot}
+                  post={post}
+                  uploading={uploadingKey === `${slot.kind}-${slot.orderIndex}`}
+                  onFileSelected={(file) => handleFileSelected(slot.kind, slot.orderIndex, file)}
+                  onDelete={
+                    post.format === 'carrossel' && existing ? () => handleDeleteMedia(existing.id) : undefined
+                  }
+                />
+              );
+            })}
             {post.format === 'carrossel' && (
               <button className={s.addSlideButton} onClick={handleAddSlide} type="button" title="Adicionar slide">
                 +
@@ -190,38 +208,92 @@ function MediaSlot({
   post,
   uploading,
   onFileSelected,
+  onDelete,
 }: {
   slot: Slot;
   post: Post;
   uploading: boolean;
   onFileSelected: (file: File) => void;
+  onDelete?: () => void;
 }) {
   const existing = post.media.find((m) => m.kind === slot.kind && m.orderIndex === slot.orderIndex);
   const inputRef = useRef<HTMLInputElement>(null);
-  const thumb = existing?.variants.thumbnail ?? existing?.originalUrl;
-  const isProcessed = !!existing?.variants.thumbnail;
+  const isVideo = slot.kind === 'reel';
+  const thumb = existing?.variants.thumbnail ?? (isVideo ? null : existing?.originalUrl);
+
+  // Vídeo (kind=reel) nunca gera thumbnail — não temos extração de frame
+  // de vídeo no worker ainda (ver media-processing.processor.ts). Sem
+  // esse caso especial, o rótulo "processando..." ficaria preso pra
+  // sempre nesse slot, mesmo com o upload concluído com sucesso.
+  const isProcessed = isVideo ? !!existing : !!existing?.variants.thumbnail;
+
+  // O input de arquivo fica sempre no DOM (mesmo com mídia já enviada) —
+  // é isso que permite "trocar": o clique no botão overlay só aciona esse
+  // input escondido de novo. O backend já sabe lidar com reenvio no
+  // mesmo slot (reseta as variantes antigas), então não precisa de
+  // nenhuma chamada extra além do fluxo normal de upload.
+  const fileInput = (
+    <input
+      ref={inputRef}
+      type="file"
+      accept={slot.accept}
+      className={s.slotInput}
+      onChange={(e) => {
+        const file = e.target.files?.[0];
+        if (file) onFileSelected(file);
+        e.target.value = ''; // permite selecionar o MESMO arquivo de novo, se precisar
+      }}
+    />
+  );
 
   return (
     <div className={`${s.slot} ${existing ? s.slotFilled : ''}`}>
       <span className={s.slotLabel}>{slot.label}</span>
 
-      {thumb ? (
-        <img src={thumb} alt={slot.label} className={s.slotImg} />
-      ) : (
-        <label className={s.slotEmptyLabel}>
-          {uploading ? 'Enviando...' : '+ Enviar imagem'}
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*"
-            className={s.slotInput}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) onFileSelected(file);
-            }}
-          />
-        </label>
+      {onDelete && existing && (
+        <button
+          type="button"
+          className={s.slotRemoveButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (window.confirm('Remover essa imagem do carrossel?')) onDelete();
+          }}
+          title="Remover"
+        >
+          ×
+        </button>
       )}
+
+      {existing && isVideo ? (
+        // Vídeo não tem preview visual ainda (sem extração de frame) —
+        // mostra um indicador claro em vez de tentar renderizar a URL do
+        // vídeo como <img> (que só mostraria ícone de imagem quebrada).
+        <div className={s.slotVideoPlaceholder}>
+          <span>🎥</span>
+          <span>Vídeo enviado</span>
+        </div>
+      ) : thumb ? (
+        <img src={thumb} alt={slot.label} className={s.slotImg} />
+      ) : null}
+
+      {existing && (
+        <button
+          type="button"
+          className={s.slotReplaceOverlay}
+          onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+        >
+          {uploading ? 'Enviando...' : isVideo ? 'Trocar vídeo' : 'Trocar foto'}
+        </button>
+      )}
+
+      {!existing && (
+        <button type="button" className={s.slotEmptyLabel} onClick={() => inputRef.current?.click()} disabled={uploading}>
+          {uploading ? 'Enviando...' : isVideo ? '+ Enviar vídeo' : '+ Enviar imagem'}
+        </button>
+      )}
+
+      {fileInput}
 
       {existing && !isProcessed && <span className={s.slotStatus}>processando...</span>}
     </div>

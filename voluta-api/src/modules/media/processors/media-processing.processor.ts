@@ -56,6 +56,19 @@ export class MediaProcessingProcessor extends WorkerHost {
       return;
     }
 
+    // Vídeo (kind=reel) não passa pelo Sharp — Sharp só decodifica imagem,
+    // e tentar rodar resize/webp em cima de um buffer de vídeo derruba o
+    // job com erro. Ainda não temos ffmpeg instalado pra extrair um frame
+    // e gerar thumbnail de vídeo de verdade (próximo passo natural, não
+    // implementado agora). O PdfDataMapper já sabe cair pro frame de capa
+    // quando o reel não tem variants (`reelFrameUrl` tem fallback pra
+    // `coverImage` documentado) — então aqui só confirmamos o recebimento,
+    // sem gerar (nem fingir gerar) uma variante que não existe de verdade.
+    if (media.kind === PostMediaKind.REEL) {
+      this.logger.log(`Mídia ${postMediaId} é vídeo — sem geração de thumbnail por enquanto (sem ffmpeg no worker).`);
+      return;
+    }
+
     const originalKey = this.storageService.keyFromPublicUrl(media.originalUrl);
     const originalBuffer = await this.storageService.downloadBuffer(originalKey);
     const basePath = originalKey.replace(/\.[^./]+$/, '');

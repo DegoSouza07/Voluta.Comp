@@ -108,4 +108,21 @@ describe('MediaProcessingProcessor', () => {
 
     expect(aiQueue.add).not.toHaveBeenCalled();
   });
+
+  it('NUNCA roda o Sharp em cima de vídeo (kind=reel) — regressão de um bug real: Sharp não decodifica vídeo e o job quebrava', async () => {
+    const sharp = require('sharp').default;
+    sharp.mockClear();
+
+    mediaRepo.findOne.mockResolvedValue({
+      id: 'media-4', postId: 'post-1', kind: PostMediaKind.REEL, orderIndex: 0,
+      originalUrl: 'https://cdn.test/video.mp4',
+    });
+    postsRepo.findOne.mockResolvedValue({ id: 'post-1', format: PostFormat.REEL });
+
+    await processor.process({ data: { postMediaId: 'media-4' } } as any);
+
+    expect(sharp).not.toHaveBeenCalled();
+    expect(storage.downloadBuffer).not.toHaveBeenCalled();
+    expect(mediaRepo.save).not.toHaveBeenCalled();
+  });
 });
