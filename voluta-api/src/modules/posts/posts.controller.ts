@@ -32,6 +32,12 @@ export class PostsController {
     return this.postsService.findByProject(projectId);
   }
 
+  @Get('posts/:id')
+  @TenantResource(TenantResourceType.POST, 'id')
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.postsService.findOneWithMedia(id);
+  }
+
   @Patch('projects/:projectId/posts/reorder')
   @Roles(UserRole.VOLUTA_ADMIN, UserRole.VOLUTA_EDITOR)
   @TenantResource(TenantResourceType.PROJECT, 'projectId')
