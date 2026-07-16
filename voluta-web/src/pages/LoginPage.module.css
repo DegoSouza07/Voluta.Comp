@@ -1,0 +1,89 @@
+.screen {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  background: var(--color-bg);
+}
+
+@media (max-width: 860px) {
+  .screen {
+    grid-template-columns: 1fr;
+  }
+  .hero {
+    display: none;
+  }
+}
+
+.hero {
+  background: var(--color-text);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 56px;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brandMark {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 1px;
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.heroTitle {
+  font-size: 64px;
+  line-height: 0.98;
+  letter-spacing: 0.5px;
+}
+.heroTitle em { font-style: italic; font-weight: 500; color: var(--color-accent); }
+
+.heroFoot {
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.55);
+  max-width: 380px;
+  line-height: 1.6;
+}
+
+.formSide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.formCard {
+  width: 100%;
+  max-width: 360px;
+}
+
+.formTitle {
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+.formSubtitle {
+  color: var(--color-text-soft);
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+
+.submitRow {
+  margin-top: 8px;
+}
+
+.submitRow button {
+  width: 100%;
+}

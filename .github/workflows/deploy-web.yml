@@ -1,0 +1,56 @@
+name: Deploy voluta-web to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'voluta-web/**'
+      - '.github/workflows/deploy-web.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: voluta-web/package-lock.json
+
+      - name: Instalar dependências
+        working-directory: voluta-web
+        run: npm ci
+
+      - name: Build de produção
+        working-directory: voluta-web
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: https://api-production-8d50.up.railway.app/api/v1
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: voluta-web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
