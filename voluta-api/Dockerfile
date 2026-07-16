@@ -5,14 +5,19 @@
 # imagem só) em troca de ~300MB a mais na imagem da API. Se isso incomodar
 # no futuro, é só separar em Dockerfile.api / Dockerfile.worker.
 
-FROM node:20-slim AS build
+FROM node:22-slim AS build
 WORKDIR /app
+# Precisa estar ANTES do npm ci — sem isso, o postinstall do Puppeteer
+# tenta baixar o próprio Chromium (não queremos, instalamos via apt no
+# estágio de runtime) e falha porque essa imagem não tem `unzip` pra
+# extrair o pacote baixado.
+ENV PUPPETEER_SKIP_DOWNLOAD=true
 COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:20-slim AS runtime
+FROM node:22-slim AS runtime
 WORKDIR /app
 
 # Chromium do sistema (não o baixado pelo puppeteer no postinstall) — mais
