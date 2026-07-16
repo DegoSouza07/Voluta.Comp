@@ -7,10 +7,6 @@
 
 FROM node:22-slim AS build
 WORKDIR /app
-# Precisa estar ANTES do npm ci — sem isso, o postinstall do Puppeteer
-# tenta baixar o próprio Chromium (não queremos, instalamos via apt no
-# estágio de runtime) e falha porque essa imagem não tem `unzip` pra
-# extrair o pacote baixado.
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 COPY package*.json ./
 RUN npm ci
@@ -20,10 +16,6 @@ RUN npm run build
 FROM node:22-slim AS runtime
 WORKDIR /app
 
-# Chromium do sistema (não o baixado pelo puppeteer no postinstall) — mais
-# leve e mais fácil de manter atualizado via apt do que via o download do
-# pacote puppeteer, que depende de storage.googleapis.com estar acessível
-# no momento do build (ver nota no README sobre rede corporativa restrita).
 RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium \
     fonts-liberation \
@@ -34,6 +26,8 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 COPY package*.json ./
 RUN npm ci --omit=dev
 COPY --from=build /app/dist ./dist
+COPY scripts ./scripts
+COPY sql ./sql
 
 # Sem CMD fixo aqui de propósito — docker-compose.yml define
 # `command: node dist/main` (API) ou `command: node dist/worker` (Worker)
