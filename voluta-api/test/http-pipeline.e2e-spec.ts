@@ -1,6 +1,6 @@
 import { Body, Controller, Get, INestApplication, Post, ValidationPipe, VersioningType } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import * as request from 'supertest';
+import request from 'supertest';
 import { IsEmail, IsString, MinLength } from 'class-validator';
 import { HttpExceptionFilter } from '../src/common/filters/http-exception.filter';
 
