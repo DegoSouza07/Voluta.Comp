@@ -41,7 +41,7 @@ export class ProjectsService {
   async findByPublicSlug(slug: string): Promise<Project> {
     const project = await this.projectsRepository.findOne({
       where: { publicSlug: slug },
-      relations: { client: true, posts: true },
+      relations: { client: true, posts: { media: true } },
     });
     if (!project) throw new NotFoundException('Plano visual não encontrado ou link expirado.');
     return project;
