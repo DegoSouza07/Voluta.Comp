@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { getQueueToken } from '@nestjs/bullmq';
 import { MediaService } from './media.service';
@@ -45,6 +45,46 @@ describe('MediaService', () => {
           filename: 'foto.jpg', contentType: 'image/jpeg', kind: PostMediaKind.COVER, orderIndex: 0,
         }),
       ).rejects.toThrow(NotFoundException);
+    });
+
+    it('rejeita vídeo enviado pro slot de capa (cover) — regressão real: sem isso o slot ficava preso em "processando" pra sempre, sem erro visível', async () => {
+      postsRepo.findOne.mockResolvedValue({ id: 'post-1' });
+      await expect(
+        service.createUploadUrl('post-1', {
+          filename: 'video.mp4', contentType: 'video/mp4', kind: PostMediaKind.COVER, orderIndex: 0,
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('rejeita vídeo enviado pro slide de um carrossel', async () => {
+      postsRepo.findOne.mockResolvedValue({ id: 'post-1' });
+      await expect(
+        service.createUploadUrl('post-1', {
+          filename: 'video.mp4', contentType: 'video/mp4', kind: PostMediaKind.SLIDE, orderIndex: 0,
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('rejeita imagem enviada pro slot de reel (que espera vídeo)', async () => {
+      postsRepo.findOne.mockResolvedValue({ id: 'post-1' });
+      await expect(
+        service.createUploadUrl('post-1', {
+          filename: 'foto.jpg', contentType: 'image/jpeg', kind: PostMediaKind.REEL, orderIndex: 0,
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('aceita vídeo no slot de reel — é o único kind que pode ser vídeo', async () => {
+      postsRepo.findOne.mockResolvedValue({ id: 'post-1' });
+      mediaRepo.findOne.mockResolvedValue(null);
+      mediaRepo.create.mockImplementation((d: any) => d);
+      mediaRepo.save.mockImplementation((m: any) => Promise.resolve({ id: 'media-1', ...m }));
+
+      const result = await service.createUploadUrl('post-1', {
+        filename: 'video.mp4', contentType: 'video/mp4', kind: PostMediaKind.REEL, orderIndex: 0,
+      });
+
+      expect(result.postMediaId).toBe('media-1');
     });
 
     it('cria um novo slot de PostMedia quando não existe ainda', async () => {
@@ -112,6 +152,23 @@ describe('MediaService', () => {
 
       expect(queue.add).toHaveBeenCalledWith('process-media', { postMediaId: 'media-1' });
       expect(result).toEqual({ queued: true });
+    });
+  });
+
+  describe('deleteMedia', () => {
+    it('lança NotFoundException se a mídia não existe', async () => {
+      mediaRepo.findOne.mockResolvedValue(null);
+      await expect(service.deleteMedia('media-inexistente')).rejects.toThrow(NotFoundException);
+    });
+
+    it('remove o registro do banco (usado pra tirar um slide do carrossel)', async () => {
+      const media = { id: 'media-1', kind: PostMediaKind.SLIDE, orderIndex: 2 };
+      mediaRepo.findOne.mockResolvedValue(media);
+      mediaRepo.remove.mockResolvedValue(media);
+
+      await service.deleteMedia('media-1');
+
+      expect(mediaRepo.remove).toHaveBeenCalledWith(media);
     });
   });
 });
