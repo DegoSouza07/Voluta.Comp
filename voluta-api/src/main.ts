@@ -2,12 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ApiModule } from './api.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { resolveCorsOrigin } from './common/utils/cors-origin.util';
 
-/**
- * Entry point de PRODUÇÃO do processo de API — só HTTP, zero consumidor de
- * fila (ver src/worker.ts pro processo separado que consome as filas).
- * Continua respondendo em /api/v1, igual sempre respondeu.
- */
 async function bootstrap() {
   const app = await NestFactory.create(ApiModule);
 
@@ -16,15 +12,15 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,        // remove campos que não estão no DTO
-      forbidNonWhitelisted: true, // erro explícito se o client mandar campo desconhecido
-      transform: true,         // converte payload pro tipo do DTO automaticamente
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
 
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  app.enableCors({ origin: process.env.CORS_ORIGIN?.split(',') ?? '*' });
+  app.enableCors({ origin: resolveCorsOrigin(process.env.CORS_ORIGIN) });
 
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
