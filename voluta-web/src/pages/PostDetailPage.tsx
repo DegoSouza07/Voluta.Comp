@@ -168,9 +168,7 @@ export function PostDetailPage() {
                   post={post}
                   uploading={uploadingKey === `${slot.kind}-${slot.orderIndex}`}
                   onFileSelected={(file) => handleFileSelected(slot.kind, slot.orderIndex, file)}
-                  onDelete={
-                    post.format === 'carrossel' && existing ? () => handleDeleteMedia(existing.id) : undefined
-                  }
+                  onDelete={existing ? () => handleDeleteMedia(existing.id) : undefined}
                 />
               );
             })}
