@@ -215,3 +215,16 @@ export const mediaApi = {
 };
 
 export { getToken };
+
+export interface PublicPlan extends Project {
+  client: Client;
+  posts: Post[];
+}
+
+export const publicApi = {
+  getPlan: (slug: string) => request<PublicPlan>(`/public/plano/${slug}`),
+  submitApproval: (
+    postId: string,
+    data: { action: 'approved' | 'change_requested'; comment?: string; clientIdentifier: string },
+  ) => request<void>(`/public/posts/${postId}/approval`, { method: 'POST', body: JSON.stringify(data) }),
+};

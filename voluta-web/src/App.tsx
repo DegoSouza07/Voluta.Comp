@@ -6,7 +6,7 @@ import { ClientsPage } from './pages/ClientsPage';
 import { ClientDetailPage } from './pages/ClientDetailPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { PostDetailPage } from './pages/PostDetailPage';
-
+import { PublicPlanPage } from './pages/PublicPlanPage';
 // HashRouter de propósito — funciona em qualquer hospedagem estática
 // (GitHub Pages incluso) sem precisar configurar rewrite de servidor pra
 // rotas client-side. Trade-off: URLs com # no meio, aceitável pra um
@@ -18,6 +18,7 @@ export function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<Navigate to="/clients" replace />} />
+          <Route path="/plano/:slug" element={<PublicPlanPage />} />
           <Route
             path="/clients"
             element={

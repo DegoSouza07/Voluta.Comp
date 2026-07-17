@@ -1,0 +1,144 @@
+.page {
+  min-height: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 24px 96px;
+}
+
+.loadingLine {
+  color: var(--color-text-faint);
+  font-size: 14px;
+  padding: 48px 0;
+  text-align: center;
+  display: block;
+}
+
+.notFound {
+  text-align: center;
+  padding: 96px 24px;
+}
+.notFound h2 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+.notFound p {
+  color: var(--color-text-soft);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--color-rule);
+}
+.eyebrow {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.header h1 {
+  font-size: 34px;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+.subtitle {
+  color: var(--color-text-soft);
+  font-size: 14px;
+  margin: 0;
+}
+
+.nameBar {
+  background: var(--color-accent-soft);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 32px;
+}
+.nameLabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--color-accent-dark);
+}
+
+.postsList {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.postCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+}
+
+.postHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.postTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.mediaRow {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+  padding-bottom: 4px;
+}
+.mediaImg,
+.mediaVideo {
+  height: 340px;
+  width: auto;
+  max-width: 100%;
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: var(--color-accent-soft);
+  flex-shrink: 0;
+}
+
+.caption {
+  white-space: pre-wrap;
+  font-size: 14.5px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.formError {
+  color: var(--color-danger);
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.commentBox {
+  width: 100%;
+}
+.commentActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.resolvedNote {
+  font-size: 13.5px;
+  color: var(--color-text-soft);
+  font-style: italic;
+}

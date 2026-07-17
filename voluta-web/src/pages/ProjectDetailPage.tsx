@@ -57,6 +57,7 @@ export function ProjectDetailPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [error, setError] = useState('');
   const [rendering, setRendering] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const pollRef = useRef<number | null>(null);
 
   function reload() {
@@ -120,6 +121,15 @@ export function ProjectDetailPage() {
       setError(errMsg(err));
     }
   }
+  
+  function handleCopyLink() {
+    if (!project?.publicSlug) return;
+    const url = `${window.location.origin}${import.meta.env.BASE_URL}#/plano/${project.publicSlug}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setLinkCopied(true);
+      window.setTimeout(() => setLinkCopied(false), 2000);
+    });
+  }
 
   if (!projectId) return null;
 
@@ -149,6 +159,15 @@ export function ProjectDetailPage() {
       />
 
       <ErrorBanner>{error}</ErrorBanner>
+
+      {project?.publicSlug && (
+        <div className={s.pdfCallout}>
+          <span className={s.pdfCalloutText}>Link de aprovação do cliente</span>
+          <Button variant="secondary" onClick={handleCopyLink}>
+            {linkCopied ? 'Copiado!' : 'Copiar link'}
+          </Button>
+        </div>
+      )}
 
       {project?.pdfUrl && (
         <div className={s.pdfCallout}>
