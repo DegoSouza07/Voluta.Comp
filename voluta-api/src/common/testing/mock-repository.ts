@@ -13,6 +13,7 @@ export function createMockRepository<T = any>(): MockRepository<T> {
     save: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    remove: jest.fn(),
     createQueryBuilder: jest.fn(),
   };
 }

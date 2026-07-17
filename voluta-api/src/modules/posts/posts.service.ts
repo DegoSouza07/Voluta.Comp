@@ -51,7 +51,7 @@ export class PostsService {
   }
 
   async update(id: string, dto: UpdatePostDto): Promise<Post> {
-    const post = await this.findOne(id);
+    const post = await this.findOneWithMedia(id);
     Object.assign(post, dto);
 
     // weekday é derivado e cacheado (ver Etapa 2) — nunca calculado no
