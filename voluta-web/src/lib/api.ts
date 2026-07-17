@@ -200,6 +200,8 @@ export const mediaApi = {
     request<{ queued: boolean }>(`/posts/${postId}/media/${postMediaId}/confirm-upload`, {
       method: 'POST',
     }),
+  deleteMedia: (postId: string, postMediaId: string) =>
+    request<void>(`/posts/${postId}/media/${postMediaId}`, { method: 'DELETE' }),
   // Upload direto pro bucket — não passa pela nossa API (Etapa 1: nunca
   // proxy de arquivo pesado pelo servidor de aplicação).
   uploadFile: async (uploadUrl: string, file: File) => {

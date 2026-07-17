@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common';
 import { MediaService } from './media.service';
 import { CreateUploadUrlDto } from './dto/create-upload-url.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -32,5 +32,10 @@ export class MediaController {
   @Get()
   findByPost(@Param('postId', ParseUUIDPipe) postId: string) {
     return this.mediaService.findByPost(postId);
+  }
+
+  @Delete(':postMediaId')
+  deleteMedia(@Param('postMediaId', ParseUUIDPipe) postMediaId: string) {
+    return this.mediaService.deleteMedia(postMediaId);
   }
 }
