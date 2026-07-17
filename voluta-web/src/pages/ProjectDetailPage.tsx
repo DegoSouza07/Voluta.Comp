@@ -124,7 +124,8 @@ export function ProjectDetailPage() {
   
   function handleCopyLink() {
     if (!project?.publicSlug) return;
-    const url = `${window.location.origin}${import.meta.env.BASE_URL}#/plano/${project.publicSlug}`;
+    const basePath = window.location.pathname; // ex: '/Voluta.Comp/' em produção, '/' local
+    const url = `${window.location.origin}${basePath}#/plano/${project.publicSlug}`;
     navigator.clipboard.writeText(url).then(() => {
       setLinkCopied(true);
       window.setTimeout(() => setLinkCopied(false), 2000);
