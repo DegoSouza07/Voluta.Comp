@@ -155,6 +155,7 @@ export const clientsApi = {
   }) => request<Client>('/clients', { method: 'POST', body: JSON.stringify(data) }),
   update: (id: string, data: Partial<Client>) =>
     request<Client>(`/clients/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deactivate: (id: string) => request<void>(`/clients/${id}`, { method: 'DELETE' }),
 };
 
 // ---------- Projects ----------
@@ -167,6 +168,7 @@ export const projectsApi = {
   publish: (id: string) => request<Project>(`/projects/${id}/publish`, { method: 'PATCH' }),
   renderPdf: (id: string) =>
     request<{ queued: boolean; projectId: string }>(`/projects/${id}/render-pdf`, { method: 'POST' }),
+  remove: (id: string) => request<void>(`/projects/${id}`, { method: 'DELETE' }),
 };
 
 // ---------- Posts ----------

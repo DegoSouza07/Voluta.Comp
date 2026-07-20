@@ -77,3 +77,30 @@
   color: var(--color-text-faint);
   font-size: 14px;
 }
+
+.cardWrapper {
+  position: relative;
+}
+
+.cardDeleteButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(26, 22, 18, 0.06);
+  color: var(--color-text-soft);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.cardDeleteButton:hover {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}

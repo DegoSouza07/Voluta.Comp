@@ -70,4 +70,13 @@ export class ProjectsService {
     project.pdfGeneratedAt = new Date();
     return this.projectsRepository.save(project);
   }
+  
+  // DELETE físico de verdade — nunca soft-delete pra projeto (diferente de
+  // Client). O cascade é 100% via FK do banco (ON DELETE CASCADE em
+  // posts/post_media/post_approvals/webhook_events), não por código —
+  // ver sql/000_init.sql e sql/001_post_media.sql.
+  async remove(id: string): Promise<void> {
+    const result = await this.projectsRepository.delete(id);
+    if (result.affected === 0) throw new NotFoundException(`Projeto ${id} não encontrado.`);
+  }
 }

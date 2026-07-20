@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -50,5 +50,12 @@ export class ProjectsController {
   @TenantResource(TenantResourceType.PROJECT, 'id')
   publish(@Param('id', ParseUUIDPipe) id: string) {
     return this.projectsService.publish(id);
+  }
+
+  @Delete(':id')
+  @Roles(UserRole.VOLUTA_ADMIN, UserRole.VOLUTA_EDITOR)
+  @TenantResource(TenantResourceType.PROJECT, 'id')
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.projectsService.remove(id);
   }
 }

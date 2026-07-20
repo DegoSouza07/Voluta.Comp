@@ -10,7 +10,6 @@ export function ClientsPage() {
   const [clients, setClients] = useState<Client[] | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [loadError, setLoadError] = useState('');
-
   function reload() {
     clientsApi
       .list()
@@ -18,6 +17,21 @@ export function ClientsPage() {
       .catch((err) => setLoadError(err instanceof ApiError ? err.message : 'Falha ao carregar clientes.'));
   }
 
+  async function handleDeleteClient(id: string, name: string) {
+    if (
+      !window.confirm(
+        `Remover "${name}" da lista de clientes? Os projetos já criados não são apagados — o cliente só some da listagem, e isso é reversível.`,
+      )
+    )
+      return;
+    try {
+      await clientsApi.deactivate(id);
+      reload();
+    } catch (err) {
+      setLoadError(err instanceof ApiError ? err.message : 'Não foi possível remover o cliente.');
+    }
+  }
+  
   useEffect(reload, []);
 
   return (
@@ -43,12 +57,26 @@ export function ClientsPage() {
       {clients && clients.length > 0 && (
         <div className={s.grid}>
           {clients.map((client) => (
-            <Link key={client.id} to={`/clients/${client.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <Card hover>
-                <div className={s.itemTitle}>{client.name}</div>
-                <div className={s.itemMeta}>@{client.instagramHandle ?? client.slug}</div>
-              </Card>
-            </Link>
+            <div key={client.id} className={s.cardWrapper}>
+              <Link to={`/clients/${client.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Card hover>
+                  <div className={s.itemTitle}>{client.name}</div>
+                  <div className={s.itemMeta}>@{client.instagramHandle ?? client.slug}</div>
+                </Card>
+              </Link>
+              <button
+                type="button"
+                className={s.cardDeleteButton}
+                title="Excluir cliente"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleDeleteClient(client.id, client.name);
+                }}
+              >
+                ×
+              </button>
+            </div>
           ))}
         </div>
       )}

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Breadcrumb, PageHeader } from '../components/Layout';
 import { Modal } from '../components/Modal';
 import { Badge, Button, Card, ErrorBanner, Field, Select } from '../components/ui';
@@ -51,6 +51,7 @@ function errMsg(err: unknown): string {
 
 export function ProjectDetailPage() {
   const { projectId } = useParams<{ projectId: string }>();
+  const navigate = useNavigate();
   const [project, setProject] = useState<Project | null>(null);
   const [client, setClient] = useState<Client | null>(null);
   const [posts, setPosts] = useState<Post[] | null>(null);
@@ -121,6 +122,23 @@ export function ProjectDetailPage() {
       setError(errMsg(err));
     }
   }
+
+  async function handleDeleteProject() {
+    if (!projectId || !project) return;
+    if (
+      !window.confirm(
+        `Excluir o projeto "${project.title}" permanentemente? Essa ação não pode ser desfeita — todos os posts e mídias desse projeto são apagados junto.`,
+      )
+    )
+      return;
+    setError('');
+    try {
+      await projectsApi.remove(projectId);
+      navigate(`/clients/${project.clientId}`);
+    } catch (err) {
+      setError(errMsg(err));
+    }
+  }
   
   function handleCopyLink() {
     if (!project?.publicSlug) return;
@@ -154,6 +172,9 @@ export function ProjectDetailPage() {
             </Button>
             <Button variant="secondary" onClick={() => setShowCreate(true)}>
               + Novo post
+            </Button>
+            <Button variant="ghost" onClick={handleDeleteProject} disabled={!project} style={{ color: 'var(--color-danger)' }}>
+              Excluir projeto
             </Button>
           </div>
         }
