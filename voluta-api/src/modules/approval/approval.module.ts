@@ -5,6 +5,7 @@ import { PostApproval } from './entities/post-approval.entity';
 import { Post } from '../posts/entities/post.entity';
 import { ApprovalService } from './approval.service';
 import { PublicController } from './public.controller';
+import { ApprovalController } from './approval.controller';
 import { ProjectsModule } from '../projects/projects.module';
 import { JOB_CLEANUP_DEFAULTS } from '../../common/bullmq/job-cleanup.defaults';
 
@@ -17,7 +18,7 @@ import { JOB_CLEANUP_DEFAULTS } from '../../common/bullmq/job-cleanup.defaults';
     }),
     ProjectsModule,
   ],
-  controllers: [PublicController],
+  controllers: [PublicController, ApprovalController],
   providers: [ApprovalService],
 })
 export class ApprovalModule {}

@@ -4,10 +4,12 @@ import { Breadcrumb, PageHeader } from '../components/Layout';
 import { Badge, Button, Field, Select, TextArea, TextInput } from '../components/ui';
 import {
   ApiError,
+  approvalsApi,
   mediaApi,
   postsApi,
   type FunnelStage,
   type Post,
+  type PostApproval,
   type PostMediaKind,
   type PostStatus,
 } from '../lib/api';
@@ -181,6 +183,8 @@ export function PostDetailPage() {
 
           <div className={s.sectionTitle}>Contexto pra IA</div>
           <PostContextField post={post} onSaved={setPost} />
+
+          <ApprovalHistory postId={post.id} status={post.status} />
         </div>
 
         <div>
@@ -197,6 +201,40 @@ function ErrorBannerInline({ children }: { children: string }) {
   return (
     <div style={{ color: 'var(--color-danger)', fontSize: 13.5, marginBottom: 20 }} role="alert">
       {children}
+    </div>
+  );
+}
+
+function ApprovalHistory({ postId, status }: { postId: string; status: PostStatus }) {
+  const [approvals, setApprovals] = useState<PostApproval[] | null>(null);
+
+  useEffect(() => {
+    approvalsApi.listByPost(postId).then(setApprovals).catch(() => setApprovals([]));
+  }, [postId]);
+
+  if (status !== 'approved' && status !== 'change_requested') return null;
+  if (!approvals || approvals.length === 0) return null;
+
+  return (
+    <div style={{ marginBottom: 32 }}>
+      <div className={s.sectionTitle}>Feedback do cliente</div>
+      {approvals.map((a) => (
+        <div
+          key={a.id}
+          style={{
+            padding: '12px 16px',
+            marginBottom: 8,
+            borderRadius: 3,
+            background: a.action === 'approved' ? 'var(--color-success-soft)' : 'var(--color-danger-soft)',
+          }}
+        >
+          <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>
+            {a.clientIdentifier} — {a.action === 'approved' ? 'Aprovou' : 'Pediu ajuste'} em{' '}
+            {new Date(a.createdAt).toLocaleString('pt-BR')}
+          </div>
+          {a.comment && <div style={{ fontSize: 14 }}>{a.comment}</div>}
+        </div>
+      ))}
     </div>
   );
 }

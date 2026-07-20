@@ -230,3 +230,16 @@ export const publicApi = {
     data: { action: 'approved' | 'change_requested'; comment?: string; clientIdentifier: string },
   ) => request<void>(`/public/posts/${postId}/approval`, { method: 'POST', body: JSON.stringify(data) }),
 };
+ 
+ export interface PostApproval {
+  id: string;
+  postId: string;
+  action: 'approved' | 'change_requested';
+  comment: string | null;
+  clientIdentifier: string;
+  createdAt: string;
+}
+
+export const approvalsApi = {
+  listByPost: (postId: string) => request<PostApproval[]>(`/posts/${postId}/approvals`),
+};
